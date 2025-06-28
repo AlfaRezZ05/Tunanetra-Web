@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Tunanetra - Text to Speech</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+      text-align: center;
+      padding: 2rem;
+    }
+    textarea {
+      width: 80%;
+      height: 200px;
+      font-size: 1.2rem;
+      padding: 1rem;
+      border-radius: 10px;
+      border: none;
+      resize: none;
+      background-color: #222;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.1rem;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Website Tunanetra: Text to Speech Saat Mengetik</h1>
+  <p>Ketikkan teks di bawah. Sistem akan membacakan per kata, dan per kalimat saat spasi ditekan.</p>
+  <textarea id="textInput" placeholder="Mulai mengetik..."></textarea>
+
+  <script>
+    const textarea = document.getElementById('textInput');
+    let currentSentence = '';
+
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'id-ID';
+      speechSynthesis.speak(utterance);
+    }
+
+    textarea.addEventListener('input', (e) => {
+      const value = e.target.value;
+      const lastChar = value.slice(-1);
+      const words = value.trim().split(/\s+/);
+
+      if (lastChar === ' ') {
+        if (currentSentence.trim()) {
+          speak(currentSentence.trim());
+        }
+        currentSentence = '';
+      } else {
+        const lastWord = words[words.length - 1];
+        speak(lastWord);
+        currentSentence = value;
+      }
+    });
+  </script>
+</body>
+</html>
