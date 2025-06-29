@@ -32,133 +32,39 @@
       font-size: 1.1rem;
       color: #ccc;
     }
-    .controls {
-      margin-top: 1rem;
-    }
-    button, select {
-      margin: 0.5rem;
-      padding: 0.7rem 1rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .play { background-color: #4CAF50; color: white; }
-    .stop { background-color: #f44336; color: white; }
-    .contrast-toggle { background-color: #008CBA; color: white; }
   </style>
 </head>
 <body>
   <h1>Website Tunanetra: Text to Speech Saat Mengetik</h1>
-  <p>Ketikkan teks di bawah. Sistem akan membacakan per huruf, per kata saat spasi, dan per kalimat saat Enter.</p>
+  <p>Ketikkan teks di bawah. Sistem akan membacakan per kata, dan per kalimat saat spasi ditekan.</p>
   <textarea id="textInput" placeholder="Mulai mengetik..."></textarea>
-
-  <div class="controls">
-    <button class="play" onclick="playText()">🔊 Baca Ulang</button>
-    <button class="stop" onclick="stopSpeech()">⏹ Hentikan</button>
-    <button class="contrast-toggle" onclick="toggleContrast()">🌓 Mode Kontras</button>
-    <br>
-    <label for="voiceSelect">🔈 Pilih Suara: </label>
-    <select id="voiceSelect"></select>
-  </div>
 
   <script>
     const textarea = document.getElementById('textInput');
-    const voiceSelect = document.getElementById('voiceSelect');
-    let currentWord = '';
     let currentSentence = '';
-    let voices = [];
-    let ttsEnabled = false;
-
-    function loadVoices() {
-      voices = speechSynthesis.getVoices();
-      voiceSelect.innerHTML = '';
-      voices.forEach((voice, i) => {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = `${voice.name} (${voice.lang})`;
-        voiceSelect.appendChild(option);
-      });
-    }
-
-    speechSynthesis.onvoiceschanged = loadVoices;
 
     function speak(text) {
-      if (!ttsEnabled) return;
-      stopSpeech();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'id-ID';
-      if (voices.length > 0) {
-        utterance.voice = voices[voiceSelect.value];
-      }
       speechSynthesis.speak(utterance);
     }
 
-    function stopSpeech() {
-      speechSynthesis.cancel();
-    }
+    textarea.addEventListener('input', (e) => {
+      const value = e.target.value;
+      const lastChar = value.slice(-1);
+      const words = value.trim().split(/\s+/);
 
-    function playText() {
-      ttsEnabled = true;
-      speak(textarea.value);
-    }
-
-    textarea.addEventListener('keydown', (e) => {
-      const key = e.key;
-
-      if (!ttsEnabled) return;
-
-      if (key.length === 1 && key.match(/[a-zA-Z0-9]/)) {
-        speak(key);
-        currentWord += key;
-        currentSentence += key;
-      } else if (key === ' ') {
-        if (currentWord.trim()) {
-          speak(currentWord);
-        }
-        currentSentence += ' ';
-        currentWord = '';
-      } else if (key === 'Enter') {
-        e.preventDefault();
-        const fullText = textarea.value.trim();
-        if (fullText) {
-          speak(fullText);
+      if (lastChar === ' ') {
+        if (currentSentence.trim()) {
+          speak(currentSentence.trim());
         }
         currentSentence = '';
-        currentWord = '';
-      } else if (key === 'Backspace') {
-        currentWord = currentWord.slice(0, -1);
-        currentSentence = currentSentence.slice(0, -1);
+      } else {
+        const lastWord = words[words.length - 1];
+        speak(lastWord);
+        currentSentence = value;
       }
     });
-
-    function toggleContrast() {
-      const body = document.body;
-      if (body.style.backgroundColor === 'white') {
-        body.style.backgroundColor = '#111';
-        body.style.color = '#fff';
-        textarea.style.backgroundColor = '#222';
-        textarea.style.color = '#fff';
-      } else {
-        body.style.backgroundColor = 'white';
-        body.style.color = 'black';
-        textarea.style.backgroundColor = '#eee';
-        textarea.style.color = 'black';
-      }
-    }
-
-    // Aktifkan TTS setelah interaksi pengguna
-    function enableTTS() {
-      if (!ttsEnabled) {
-        const dummy = new SpeechSynthesisUtterance('');
-        dummy.volume = 0;
-        speechSynthesis.speak(dummy);
-        ttsEnabled = true;
-      }
-    }
-
-    document.addEventListener('click', enableTTS);
-    document.addEventListener('touchstart', enableTTS);
   </script>
 </body>
 </html>
