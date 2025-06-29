@@ -36,11 +36,12 @@
 </head>
 <body>
   <h1>Website Tunanetra: Text to Speech Saat Mengetik</h1>
-  <p>Ketikkan teks di bawah. Sistem akan membacakan per kata, dan per kalimat saat spasi ditekan.</p>
+  <p>Ketikkan teks di bawah. Sistem akan membacakan per huruf saat diketik, per kata saat spasi, dan per kalimat saat Enter ditekan.</p>
   <textarea id="textInput" placeholder="Mulai mengetik..."></textarea>
 
   <script>
     const textarea = document.getElementById('textInput');
+    let currentWord = '';
     let currentSentence = '';
 
     function speak(text) {
@@ -49,20 +50,29 @@
       speechSynthesis.speak(utterance);
     }
 
-    textarea.addEventListener('input', (e) => {
-      const value = e.target.value;
-      const lastChar = value.slice(-1);
-      const words = value.trim().split(/\s+/);
+    textarea.addEventListener('keydown', (e) => {
+      const key = e.key;
 
-      if (lastChar === ' ') {
+      if (key.length === 1 && key.match(/[a-zA-Z0-9]/)) {
+        speak(key);
+        currentWord += key;
+        currentSentence += key;
+      } else if (key === ' ') {
+        if (currentWord.trim()) {
+          speak(currentWord);
+        }
+        currentSentence += ' ';
+        currentWord = '';
+      } else if (key === 'Enter') {
         if (currentSentence.trim()) {
           speak(currentSentence.trim());
         }
         currentSentence = '';
-      } else {
-        const lastWord = words[words.length - 1];
-        speak(lastWord);
-        currentSentence = value;
+        currentWord = '';
+        e.preventDefault();
+      } else if (key === 'Backspace') {
+        currentWord = currentWord.slice(0, -1);
+        currentSentence = currentSentence.slice(0, -1);
       }
     });
   </script>
