@@ -99,11 +99,14 @@
     }
 
     function playText() {
+      ttsEnabled = true;
       speak(textarea.value);
     }
 
     textarea.addEventListener('keydown', (e) => {
       const key = e.key;
+
+      if (!ttsEnabled) return;
 
       if (key.length === 1 && key.match(/[a-zA-Z0-9]/)) {
         speak(key);
@@ -148,6 +151,7 @@
     function enableTTS() {
       if (!ttsEnabled) {
         const dummy = new SpeechSynthesisUtterance('');
+        dummy.volume = 0;
         speechSynthesis.speak(dummy);
         ttsEnabled = true;
       }
