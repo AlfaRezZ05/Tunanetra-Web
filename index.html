@@ -45,10 +45,11 @@
     let currentSentence = '';
 
     function speak(text) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'id-ID';
-      speechSynthesis.speak(utterance);
-    }
+  speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'id-ID';
+  speechSynthesis.speak(utterance);
+}
 
     textarea.addEventListener('keydown', (e) => {
       const key = e.key;
