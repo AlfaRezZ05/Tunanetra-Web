@@ -114,12 +114,13 @@
         currentSentence += ' ';
         currentWord = '';
       } else if (key === 'Enter') {
-        if (currentSentence.trim()) {
-          speak(currentSentence.trim());
+        e.preventDefault();
+        const fullText = textarea.value.trim();
+        if (fullText) {
+          speak(fullText);
         }
         currentSentence = '';
         currentWord = '';
-        e.preventDefault();
       } else if (key === 'Backspace') {
         currentWord = currentWord.slice(0, -1);
         currentSentence = currentSentence.slice(0, -1);
