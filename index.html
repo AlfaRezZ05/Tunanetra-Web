@@ -68,6 +68,7 @@
     let currentWord = '';
     let currentSentence = '';
     let voices = [];
+    let ttsEnabled = false;
 
     function loadVoices() {
       voices = speechSynthesis.getVoices();
@@ -83,6 +84,7 @@
     speechSynthesis.onvoiceschanged = loadVoices;
 
     function speak(text) {
+      if (!ttsEnabled) return;
       stopSpeech();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'id-ID';
@@ -141,6 +143,18 @@
         textarea.style.color = 'black';
       }
     }
+
+    // Aktifkan TTS setelah interaksi pengguna
+    function enableTTS() {
+      if (!ttsEnabled) {
+        const dummy = new SpeechSynthesisUtterance('');
+        speechSynthesis.speak(dummy);
+        ttsEnabled = true;
+      }
+    }
+
+    document.addEventListener('click', enableTTS);
+    document.addEventListener('touchstart', enableTTS);
   </script>
 </body>
 </html>
